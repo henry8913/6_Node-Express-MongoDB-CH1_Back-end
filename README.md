@@ -1,7 +1,9 @@
 
-# Blog Back-end
+# Blog Backend
 
 Backend Node.js/Express per la gestione di un blog con MongoDB.
+
+![Cover del progetto](img/cover.jpg)
 
 ## 🚀 Caratteristiche
 
@@ -48,6 +50,47 @@ Il server sarà in ascolto sulla porta 8913
 - `POST /posts` - Crea un nuovo post
 - `PUT /posts/:id` - Aggiorna un post
 - `DELETE /posts/:id` - Elimina un post
+
+### Struttura JSON per POST /posts
+
+```json
+{
+  "_id": Number,
+  "category": String,
+  "title": String,
+  "cover": String,
+  "readTime": {
+    "value": Number,
+    "unit": String
+  },
+  "author": {
+    "name": String,
+    "avatar": String
+  },
+  "content": String,
+  "createdAt": String
+}
+```
+
+Esempio:
+```json
+{
+  "_id": 16,
+  "category": "Frontend",
+  "title": "Il mio nuovo post",
+  "cover": "https://example.com/image.jpg",
+  "readTime": {
+    "value": 5,
+    "unit": "minute"
+  },
+  "author": {
+    "name": "Mario Rossi",
+    "avatar": "https://example.com/avatar.jpg"
+  },
+  "content": "<div class='py-5 blog-content'><p>Il contenuto del post...</p></div>",
+  "createdAt": "30 Apr 2024"
+}
+```
 
 ## 👤 Autore
 Progetto creato da [Henry](https://github.com/henry8913) per scopi didattici.
