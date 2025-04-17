@@ -1,5 +1,5 @@
 
-# Blog Backend
+# Blog Back-end
 
 Backend Node.js/Express per la gestione di un blog con MongoDB.
 
@@ -49,10 +49,9 @@ Il server sarà in ascolto sulla porta 8913
 - `PUT /posts/:id` - Aggiorna un post
 - `DELETE /posts/:id` - Elimina un post
 
+## 👤 Autore
+Progetto creato da [Henry](https://github.com/henry8913) per scopi didattici.
+
 ## 📄 Licenza
 
-MIT License - Vedi il file LICENSE per i dettagli.
-
-## 👤 Autore
-
-[Henry](https://github.com/henry8913)
+Questo progetto è rilasciato sotto licenza MIT. Vedi il file LICENSE per i dettagli.
