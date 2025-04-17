@@ -3,7 +3,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const app = express();
-const port = process.env.PORT || 8913;
+const port = 8913;
 
 // Middleware
 app.use(cors());
@@ -45,8 +45,36 @@ const Post = mongoose.model("Post", postSchema);
 
 // Rotte
 app.get("/posts", async (req, res) => {
-  const posts = await Post.find();
-  res.json(posts);
+  try {
+    let query = {};
+    
+    // Ricerca per titolo
+    if (req.query.title) {
+      query.title = { $regex: req.query.title, $options: 'i' };
+    }
+    
+    // Ricerca per autore
+    if (req.query.author) {
+      query['author.name'] = { $regex: req.query.author, $options: 'i' };
+    }
+
+    const posts = await Post.find(query);
+    res.json(posts);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+});
+
+// Endpoint per i post di uno specifico autore
+app.get("/authors/:authorName/posts", async (req, res) => {
+  try {
+    const posts = await Post.find({
+      'author.name': req.params.authorName
+    });
+    res.json(posts);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
 });
 
 app.get("/posts/:id", async (req, res) => {
