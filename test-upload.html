@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Upload Cloudinary</title>
+</head>
+<body>
+    <h2>Test Upload Avatar</h2>
+    <form action="/authors/1/avatar" method="POST" enctype="multipart/form-data">
+        <input type="file" name="avatar" accept="image/*">
+        <button type="submit">Upload Avatar</button>
+    </form>
+
+    <h2>Test Upload Cover</h2>
+    <form action="/posts/1/cover" method="PATCH" enctype="multipart/form-data">
+        <input type="file" name="cover" accept="image/*">
+        <button type="submit">Upload Cover</button>
+    </form>
+</body>
+</html>

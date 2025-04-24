@@ -1,3 +1,8 @@
 node_modules/
 .env
 .DS_Store
+
+
+
+# Bozza da completare
+utils/email.js

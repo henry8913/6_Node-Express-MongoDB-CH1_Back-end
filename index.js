@@ -1,4 +1,3 @@
-
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -8,6 +7,7 @@ const port = 8913;
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(express.static(__dirname))
 
 require('dotenv').config();
 
@@ -42,6 +42,54 @@ const postSchema = new mongoose.Schema({
 });
 
 const Post = mongoose.model("Post", postSchema);
+
+const { upload } = require('./utils/cloudinary');
+const { sendNewPostEmail, sendNewAuthorEmail } = require('./utils/email');
+
+// Rotte per upload immagini
+app.post("/authors/:authorId/avatar", upload.single('avatar'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: "Nessun file caricato" });
+    }
+    
+    const author = await Post.findOneAndUpdate(
+      { 'author._id': req.params.authorId },
+      { 'author.avatar': req.file.path },
+      { new: true }
+    );
+
+    if (!author) {
+      return res.status(404).json({ error: "Autore non trovato" });
+    }
+
+    res.json({ url: req.file.path });
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+});
+
+app.patch("/posts/:postId/cover", upload.single('cover'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: "Nessun file caricato" });
+    }
+
+    const post = await Post.findByIdAndUpdate(
+      req.params.postId,
+      { cover: req.file.path },
+      { new: true }
+    );
+
+    if (!post) {
+      return res.status(404).json({ error: "Post non trovato" });
+    }
+
+    res.json({ url: req.file.path });
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+});
 
 // Rotte
 app.get("/posts", async (req, res) => {
@@ -87,9 +135,17 @@ app.get("/posts/:id", async (req, res) => {
 });
 
 app.post("/posts", async (req, res) => {
-  const newPost = new Post(req.body);
-  await newPost.save();
-  res.status(201).json(newPost);
+  try {
+    const newPost = new Post(req.body);
+    await newPost.save();
+    
+    // Invia email di notifica
+    await sendNewPostEmail(newPost.author, newPost.title);
+    
+    res.status(201).json(newPost);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
 });
 
 app.put("/posts/:id", async (req, res) => {
