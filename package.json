@@ -10,6 +10,7 @@
   "author": "henry8913",
   "license": "MIT",
   "dependencies": {
+    "@sendgrid/mail": "^8.1.5",
     "cloudinary": "^1.30.0",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
