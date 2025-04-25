@@ -1,0 +1,49 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Email Send</title>
+    <style>
+        form {
+            max-width: 500px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <form action="/send-email" method="POST">
+        <div class="form-group">
+            <label for="to">To Email:</label>
+            <input type="email" name="to" required>
+        </div>
+        <div class="form-group">
+            <label for="subject">Subject:</label>
+            <input type="text" name="subject" required>
+        </div>
+        <div class="form-group">
+            <label for="content">HTML Content:</label>
+            <textarea name="content" rows="6" required></textarea>
+        </div>
+        <button type="submit">Send Email</button>
+    </form>
+</body>
+</html>

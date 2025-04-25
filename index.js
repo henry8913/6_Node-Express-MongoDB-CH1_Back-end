@@ -7,6 +7,7 @@ const port = 8913;
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname))
 
 require('dotenv').config();
@@ -174,6 +175,18 @@ app.delete("/posts/:id", async (req, res) => {
     }
   } catch (error) {
     res.status(400).send(error.message);
+  }
+});
+
+const { sendEmail } = require('./utils/email');
+
+app.post("/send-email", async (req, res) => {
+  try {
+    const { to, subject, content } = req.body;
+    await sendEmail(to, subject, content);
+    res.json({ message: "Email inviata con successo" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 });
 
