@@ -44,7 +44,6 @@ const postSchema = new mongoose.Schema({
 const Post = mongoose.model("Post", postSchema);
 
 const { upload } = require('./utils/cloudinary');
-const { sendNewPostEmail, sendNewAuthorEmail } = require('./utils/email');
 
 // Rotte per upload immagini
 app.post("/authors/:authorId/avatar", upload.single('avatar'), async (req, res) => {
