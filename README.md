@@ -9,6 +9,8 @@ Backend Node.js/Express per la gestione di un blog con MongoDB.
 
 - API RESTful
 - Integrazione MongoDB
+- Upload immagini con Cloudinary
+- Sistema di notifiche email
 - CORS abilitato
 - Gestione degli errori
 - Schema validazione dati
@@ -18,6 +20,8 @@ Backend Node.js/Express per la gestione di un blog con MongoDB.
 - Node.js
 - Express
 - MongoDB con Mongoose
+- Cloudinary per gestione immagini
+- Brevo per invio email
 - CORS
 - Dotenv
 
@@ -33,6 +37,11 @@ Crea un file `.env` nella root del progetto:
 
 ```
 MONGODB_URL=il_tuo_url_mongodb
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+BREVO_API_KEY=your_brevo_api_key
+ADMIN_EMAIL=your_admin_email
 ```
 
 ## 🚀 Avvio
@@ -50,6 +59,8 @@ Il server sarà in ascolto sulla porta 8913
 - `POST /posts` - Crea un nuovo post
 - `PUT /posts/:id` - Aggiorna un post
 - `DELETE /posts/:id` - Elimina un post
+- `POST /posts/cover` - Upload immagine di copertina
+- `POST /authors/avatar` - Upload avatar autore
 
 ### Struttura JSON per POST /posts
 
