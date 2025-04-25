@@ -69,7 +69,7 @@ app.post("/authors/:authorId/avatar", upload.single('avatar'), async (req, res) 
   }
 });
 
-app.patch("/posts/:postId/cover", upload.single('cover'), async (req, res) => {
+app.post("/posts/:postId/cover", upload.single('cover'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: "Nessun file caricato" });
