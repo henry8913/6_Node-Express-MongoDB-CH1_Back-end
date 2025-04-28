@@ -1,4 +1,3 @@
-
 # Blog Backend
 
 Backend Node.js/Express per la gestione di un blog con MongoDB.
@@ -21,7 +20,7 @@ Backend Node.js/Express per la gestione di un blog con MongoDB.
 - Express
 - MongoDB con Mongoose
 - Cloudinary per gestione immagini
-- Brevo per invio email
+- SendGrid per invio email
 - CORS
 - Dotenv
 
@@ -40,7 +39,7 @@ MONGODB_URL=il_tuo_url_mongodb
 CLOUDINARY_CLOUD_NAME=your_cloud_name
 CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
-BREVO_API_KEY=your_brevo_api_key
+SENDGRID_API_KEY=your_sendgrid_api_key
 ADMIN_EMAIL=your_admin_email
 ```
 

@@ -1,21 +1,18 @@
 
-const SibApiV3Sdk = require('@getbrevo/brevo');
-
-let apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
-let apiKey = apiInstance.authentications['apiKey'];
-apiKey.apiKey = process.env.BREVO_API_KEY;
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const sendEmail = async (to, subject, htmlContent) => {
-  let sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
-  
-  sendSmtpEmail.subject = subject;
-  sendSmtpEmail.htmlContent = htmlContent;
-  sendSmtpEmail.sender = { email: process.env.ADMIN_EMAIL };
-  sendSmtpEmail.to = [{ email: to }];
+  const msg = {
+    to,
+    from: process.env.ADMIN_EMAIL,
+    subject,
+    html: htmlContent,
+  };
 
   try {
-    const data = await apiInstance.sendTransacEmail(sendSmtpEmail);
-    return data;
+    await sgMail.send(msg);
+    return { success: true };
   } catch (error) {
     console.error('Error sending email:', error);
     throw error;
