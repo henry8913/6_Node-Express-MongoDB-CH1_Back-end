@@ -24,6 +24,14 @@ mongoose
     process.exit(1);
   });
 
+// Modello per i commenti
+const commentSchema = new mongoose.Schema({
+  _id: { type: Number, required: true },
+  text: { type: String, required: true },
+  author: { type: String, required: true },
+  createdAt: { type: String, required: true }
+});
+
 // Modello per i post del blog
 const postSchema = new mongoose.Schema({
   _id: { type: Number, required: true },
@@ -40,6 +48,7 @@ const postSchema = new mongoose.Schema({
   },
   content: { type: String, required: true },
   createdAt: { type: String, required: true },
+  comments: [commentSchema]
 });
 
 const Post = mongoose.model("Post", postSchema);
@@ -159,6 +168,100 @@ app.delete("/posts/:id", async (req, res) => {
     }
   } catch (error) {
     res.status(400).send(error.message);
+  }
+});
+
+// Routes for comments
+app.get("/blogPosts/:id/comments", async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+    if (!post) {
+      return res.status(404).send("Post non trovato");
+    }
+    res.json(post.comments);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+});
+
+app.get("/blogPosts/:id/comments/:commentId", async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+    if (!post) {
+      return res.status(404).send("Post non trovato");
+    }
+    const comment = post.comments.find(c => c._id === parseInt(req.params.commentId));
+    if (!comment) {
+      return res.status(404).send("Commento non trovato");
+    }
+    res.json(comment);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+});
+
+app.post("/blogPosts/:id", async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+    if (!post) {
+      return res.status(404).send("Post non trovato");
+    }
+
+    const newComment = {
+      _id: post.comments.length + 1,
+      text: req.body.text,
+      author: req.body.author,
+      createdAt: req.body.createdAt
+    };
+
+    post.comments.push(newComment);
+    await post.save();
+
+    res.status(201).json(newComment);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+});
+
+app.put("/blogPosts/:id/comment/:commentId", async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+    if (!post) {
+      return res.status(404).send("Post non trovato");
+    }
+
+    const commentIndex = post.comments.findIndex(c => c._id === parseInt(req.params.commentId));
+    if (commentIndex === -1) {
+      return res.status(404).send("Commento non trovato");
+    }
+
+    post.comments[commentIndex] = {
+      ...post.comments[commentIndex],
+      ...req.body
+    };
+    
+    await post.save();
+    res.json(post.comments[commentIndex]);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+});
+
+app.delete("/blogPosts/:id/comment/:commentId", async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+    if (!post) {
+      return res.status(404).send("Post non trovato");
+    }
+
+    post.comments = post.comments.filter(
+      comment => comment._id !== parseInt(req.params.commentId)
+    );
+    await post.save();
+
+    res.json({ message: "Commento eliminato con successo" });
+  } catch (error) {
+    res.status(500).send(error.message);
   }
 });
 
