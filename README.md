@@ -60,6 +60,10 @@ Il server sarà in ascolto sulla porta 8913
 - `DELETE /posts/:id` - Elimina un post
 - `POST /posts/cover` - Upload immagine di copertina
 - `POST /authors/avatar` - Upload avatar autore
+- `GET /posts/:id/comments` - Recupera tutti i commenti di un post
+- `POST /posts/:id/comments` - Aggiunge un nuovo commento a un post
+- `PUT /posts/:id/comments/:commentId` - Modifica un commento
+- `DELETE /posts/:id/comments/:commentId` - Elimina un commento
 
 ### Struttura JSON per POST /posts
 
@@ -78,7 +82,15 @@ Il server sarà in ascolto sulla porta 8913
     "avatar": String
   },
   "content": String,
-  "createdAt": String
+  "createdAt": String,
+  "comments": [
+    {
+      "_id": Number,
+      "text": String,
+      "author": String,
+      "createdAt": String
+    }
+  ]
 }
 ```
 
@@ -98,7 +110,15 @@ Esempio:
     "avatar": "https://example.com/avatar.jpg"
   },
   "content": "<div class='py-5 blog-content'><p>Il contenuto del post...</p></div>",
-  "createdAt": "30 Apr 2024"
+  "createdAt": "30 Apr 2024",
+  "comments": [
+    {
+      "_id": 1,
+      "text": "Ottimo articolo!",
+      "author": "Luigi Bianchi",
+      "createdAt": "1 May 2024"
+    }
+  ]
 }
 ```
 
