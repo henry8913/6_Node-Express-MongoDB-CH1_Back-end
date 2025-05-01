@@ -7,6 +7,10 @@ Backend Node.js/Express per la gestione di un blog con MongoDB.
 ## 🚀 Caratteristiche
 
 - API RESTful
+- Sistema di autenticazione
+  - Hashing password con bcrypt
+  - Gestione token JWT
+  - Middleware di protezione route
 - Integrazione MongoDB
 - Upload immagini con Cloudinary
 - Sistema di notifiche email
