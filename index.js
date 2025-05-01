@@ -1,6 +1,8 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const app = express();
 const port = 8913;
 
@@ -9,6 +11,48 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname));
+
+const User = require('./models/user');
+const auth = require('./middleware/auth');
+
+// Login route
+app.post('/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+    
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      return res.status(400).json({ error: 'Invalid credentials' });
+    }
+
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
+    res.json({ token, user: { id: user._id, name: user.name, email: user.email } });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Register route
+app.post('/authors', async (req, res) => {
+  try {
+    const user = new User(req.body);
+    await user.save();
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
+    res.status(201).json({ token, user: { id: user._id, name: user.name, email: user.email } });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+// Get user profile
+app.get('/me', auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.userId);
+    res.json({ user: { id: user._id, name: user.name, email: user.email } });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 require("dotenv").config();
 
