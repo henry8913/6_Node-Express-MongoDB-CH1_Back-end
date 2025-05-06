@@ -8,7 +8,8 @@ Backend Node.js/Express per la gestione di un blog con MongoDB.
 
 - API RESTful
 - Sistema di autenticazione
-  - Hashing password con bcrypt
+  - Autenticazione locale con bcrypt e JWT
+  - OAuth 2.0 con Google
   - Gestione token JWT
   - Middleware di protezione route
 - Integrazione MongoDB
