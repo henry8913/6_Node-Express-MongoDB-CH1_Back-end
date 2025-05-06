@@ -1,8 +1,11 @@
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const app = express();
 const port = 8913;
 
@@ -11,6 +14,54 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname));
+app.use(passport.initialize());
+
+// Configurazione Passport Google Strategy
+passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: `${process.env.BACKEND_URL}/auth/google/callback`
+  },
+  async function(accessToken, refreshToken, profile, done) {
+    try {
+      let user = await User.findOne({ googleId: profile.id });
+      
+      if (!user) {
+        // Redirect to registration with Google info
+        return done(null, { 
+          needsRegistration: true, 
+          googleProfile: {
+            googleId: profile.id,
+            email: profile.emails[0].value,
+            name: profile.displayName,
+            avatar: profile.photos[0].value
+          }
+        });
+      }
+
+      const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
+      return done(null, { user, token });
+    } catch (error) {
+      return done(error);
+    }
+  }
+));
+
+// Rotte Google OAuth
+app.get('/auth/google',
+  passport.authenticate('google', { scope: ['profile', 'email'] })
+);
+
+app.get('/auth/google/callback', 
+  passport.authenticate('google', { session: false }),
+  function(req, res) {
+    if (req.user.needsRegistration) {
+      return res.redirect(`${process.env.FRONTEND_URL}/register?googleProfile=${encodeURIComponent(JSON.stringify(req.user.googleProfile))}`);
+    }
+    const { user, token } = req.user;
+    res.redirect(`${process.env.FRONTEND_URL}/oauth-success?token=${token}&user=${encodeURIComponent(JSON.stringify(user))}`);
+  }
+);
 
 const User = require('./models/user');
 const auth = require('./middleware/auth');
