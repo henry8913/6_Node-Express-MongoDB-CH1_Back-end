@@ -318,39 +318,60 @@ app.post("/blogPosts/:id", async (req, res) => {
   }
 });
 
-app.put("/blogPosts/:id/comment/:commentId", async (req, res) => {
+app.put("/blogPosts/:id/comment/:commentId", auth, async (req, res) => {
   try {
+    const userId = req.userId;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(401).json({ error: "User not found" });
+    }
+
     const post = await Post.findById(req.params.id);
     if (!post) {
-      return res.status(404).send("Post non trovato");
+      return res.status(404).json({ error: "Post non trovato" });
     }
 
     const commentIndex = post.comments.findIndex(c => c._id === parseInt(req.params.commentId));
     if (commentIndex === -1) {
-      return res.status(404).send("Commento non trovato");
+      return res.status(404).json({ error: "Commento non trovato" });
     }
 
-    post.comments[commentIndex] = {
-      ...post.comments[commentIndex],
-      ...req.body
-    };
-    
+    if (post.comments[commentIndex].author !== user.name) {
+      return res.status(403).json({ error: "Non sei autorizzato a modificare questo commento" });
+    }
+
+    const updatedComment = post.comments[commentIndex];
+    updatedComment.text = req.body.text;
     await post.save();
-    res.json(post.comments[commentIndex]);
+    res.json(updatedComment);
   } catch (error) {
-    res.status(500).send(error.message);
+    res.status(500).json({ error: error.message });
   }
 });
 
-app.delete("/blogPosts/:id/comment/:commentId", async (req, res) => {
+app.delete("/blogPosts/:id/comment/:commentId", auth, async (req, res) => {
+  const userId = req.userId;
+  const user = await User.findById(userId);
+  if (!user) {
+    return res.status(401).json({ error: "User not found" });
+  }
   try {
     const post = await Post.findById(req.params.id);
     if (!post) {
       return res.status(404).send("Post non trovato");
     }
 
+    const comment = post.comments.find(c => c._id === parseInt(req.params.commentId));
+    if (!comment) {
+      return res.status(404).send("Commento non trovato");
+    }
+
+    if (comment.author !== user.name) {
+      return res.status(403).json({ error: "Non sei autorizzato a cancellare questo commento" });
+    }
+
     post.comments = post.comments.filter(
-      comment => comment._id !== parseInt(req.params.commentId)
+      c => c._id !== parseInt(req.params.commentId)
     );
     await post.save();
 
