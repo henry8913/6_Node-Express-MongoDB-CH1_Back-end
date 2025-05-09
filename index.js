@@ -7,7 +7,7 @@ const jwt = require("jsonwebtoken");
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const app = express();
-const port = 8913;
+const PORT = process.env.PORT || 8913;
 
 // Middleware
 app.use(cors());
@@ -373,6 +373,6 @@ app.post("/send-email", async (req, res) => {
 });
 
 // Avvio del server
-app.listen(port, "0.0.0.0", () => {
-  console.log(`Server in esecuzione sulla porta ${port}`);
+app.listen(PORT, () => {
+  console.log(`Server in esecuzione sulla porta ${PORT}`);
 });
