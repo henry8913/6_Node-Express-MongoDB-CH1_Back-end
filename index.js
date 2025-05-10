@@ -216,9 +216,19 @@ app.get("/posts/:id", async (req, res) => {
   }
 });
 
-app.post("/posts", async (req, res) => {
+app.post("/posts", auth, async (req, res) => {
   try {
-    const newPost = new Post(req.body);
+    const userId = req.userId;
+    const user = await User.findById(userId);
+    const postData = {
+      ...req.body,
+      author: {
+        _id: user._id,
+        name: user.name,
+        avatar: user.avatar || req.body.author.avatar
+      }
+    };
+    const newPost = new Post(postData);
     await newPost.save();
 
     // Send notification email
@@ -238,31 +248,47 @@ app.post("/posts", async (req, res) => {
   }
 });
 
-app.put("/posts/:id", async (req, res) => {
+app.put("/posts/:id", auth, async (req, res) => {
   try {
+    const userId = req.userId;
+    const user = await User.findById(userId);
+    const post = await Post.findById(req.params.id);
+    
+    if (!post) {
+      return res.status(404).json({ error: "Post non trovato" });
+    }
+    
+    if (post.author.name !== user.name) {
+      return res.status(403).json({ error: "Non sei autorizzato a modificare questo post" });
+    }
+
     const updatedPost = await Post.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
     });
-    if (updatedPost) {
-      res.json(updatedPost);
-    } else {
-      res.status(404).send("Post non trovato");
-    }
+    res.json(updatedPost);
   } catch (error) {
-    res.status(400).send(error.message);
+    res.status(400).json({ error: error.message });
   }
 });
 
-app.delete("/posts/:id", async (req, res) => {
+app.delete("/posts/:id", auth, async (req, res) => {
   try {
-    const deletedPost = await Post.findByIdAndDelete(req.params.id);
-    if (deletedPost) {
-      res.json({ message: "Post cancellato con successo" });
-    } else {
-      res.status(404).send("Post non trovato");
+    const userId = req.userId;
+    const user = await User.findById(userId);
+    const post = await Post.findById(req.params.id);
+    
+    if (!post) {
+      return res.status(404).json({ error: "Post non trovato" });
     }
+    
+    if (post.author.name !== user.name) {
+      return res.status(403).json({ error: "Non sei autorizzato a eliminare questo post" });
+    }
+
+    await Post.findByIdAndDelete(req.params.id);
+    res.json({ message: "Post cancellato con successo" });
   } catch (error) {
-    res.status(400).send(error.message);
+    res.status(400).json({ error: error.message });
   }
 });
 

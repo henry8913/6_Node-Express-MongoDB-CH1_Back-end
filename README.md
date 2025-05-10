@@ -12,6 +12,11 @@ Backend Node.js/Express per la gestione di un blog con MongoDB.
   - OAuth 2.0 con Google
   - Gestione token JWT
   - Middleware di protezione route
+  - Autorizzazione basata su ruoli per post e commenti
+- Sistema di gestione contenuti
+  - CRUD completo per post e commenti
+  - Verifica proprietà dei contenuti
+  - Protezione delle operazioni di modifica/eliminazione
 - Integrazione MongoDB
 - Upload immagini con Cloudinary
 - Sistema di notifiche email
@@ -40,12 +45,23 @@ npm install
 Crea un file `.env` nella root del progetto:
 
 ```
-MONGODB_URL=il_tuo_url_mongodb
-CLOUDINARY_CLOUD_NAME=your_cloud_name
-CLOUDINARY_API_KEY=your_api_key
-CLOUDINARY_API_SECRET=your_api_secret
-SENDGRID_API_KEY=your_sendgrid_api_key
-ADMIN_EMAIL=your_admin_email
+MONGODB_URL= # URL di connessione al database MongoDB
+appName= # Nome dell'applicazione
+PORT= # Porta su cui il server sarà in ascolto
+FRONTEND_URL= #http://0.0.0.0:3000
+BACKEND_URL= #http://0.0.0.0:8913
+
+CLOUDINARY_CLOUD_NAME= # Nome del cloud su Cloudinary
+CLOUDINARY_API_KEY= # Chiave API di Cloudinary
+CLOUDINARY_API_SECRET= # Segreto API di Cloudinary
+
+SENDGRID_API_KEY= # Chiave API di SendGrid per l'invio di email
+ADMIN_EMAIL= # Email dell'amministratore
+JWT_SECRET= # Chiave segreta per la generazione dei token JWT
+SALT_ROUNDS= # Numero di round per la generazione dell'hash della password
+
+GOOGLE_CLIENT_ID= # ID del client Google per OAuth 2.0
+GOOGLE_CLIENT_SECRET= # Segreto del client Google per OAuth 2.0
 ```
 
 ## 🚀 Avvio
